@@ -15,7 +15,7 @@ if use_student_list:
     student_text = st.text_area("Paste student list (one name per line)")
 
 start_time = st.time_input("Start time", value=time(9, 0))
-end_time = st.time_input("End time", value=time(12, 0))
+end_time = st.time_input("End time", value=time(13, 0))
 
 group_by_ip = st.checkbox("Group logs by IP address", value=True)
 
