@@ -2,19 +2,24 @@ import streamlit as st
 import pandas as pd
 from datetime import time
 
-st.set_page_config(layout="wide")  # Use the full width of the screen
+st.set_page_config(layout="wide")  # Use full screen width
 
 st.title("IP Address Usage Checker for Students")
 
 uploaded_logs = st.file_uploader("Upload logs CSV file", type=["csv"])
-student_text = st.text_area("Paste student list (one name per line)")
+
+use_student_list = st.toggle("Use student list", value=False)
+
+student_text = ""
+if use_student_list:
+    student_text = st.text_area("Paste student list (one name per line)")
 
 start_time = st.time_input("Start time", value=time(9, 0))
 end_time = st.time_input("End time", value=time(12, 0))
 
 group_by_ip = st.checkbox("Group logs by IP address", value=True)
 
-if uploaded_logs and student_text.strip():
+if uploaded_logs:
     # Read CSV logs
     df = pd.read_csv(uploaded_logs, sep=',', low_memory=False)
     df['Date'] = pd.to_datetime(df['Time'], format="%y/%m/%d, %H:%M:%S").dt.date
@@ -25,11 +30,11 @@ if uploaded_logs and student_text.strip():
     # Filter by time
     df = df[(df['Time'] >= start_time) & (df['Time'] <= end_time)]
 
-    # Parse student list from text area
-    student_list = [line.strip() for line in student_text.splitlines() if line.strip()]
-
-    if student_list:
-        df = df[df['User full name'].isin(student_list)]
+    # Filter by student list if enabled
+    if use_student_list:
+        student_list = [line.strip() for line in student_text.splitlines() if line.strip()]
+        if student_list:
+            df = df[df['User full name'].isin(student_list)]
 
     # Count unique IPs per user
     ip_counts = df.groupby("User full name")["IP address"].nunique()
@@ -55,10 +60,8 @@ if uploaded_logs and student_text.strip():
                     st.dataframe(user_ip_logs)
                     st.write("---")
             else:
-                # Show all logs for user without grouping
                 user_logs = df[df['User full name'] == user]
                 st.dataframe(user_logs)
                 st.write("---")
-
 else:
-    st.info("Please upload the logs CSV file and paste the student list above.")
+    st.info("Please upload the logs CSV file.")
