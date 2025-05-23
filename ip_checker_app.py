@@ -4,7 +4,7 @@ from datetime import time
 
 st.set_page_config(layout="wide")  # Use full screen width
 
-st.title("PAZ IP Address Usage Checker for Students")
+st.title("PAZ1ab - Moodle IP Address Checker")
 
 uploaded_logs = st.file_uploader("Upload the log file exported from Moodle of the day of the exam in CSV format", type=["csv"])
 
