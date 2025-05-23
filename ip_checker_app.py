@@ -4,9 +4,9 @@ from datetime import time
 
 st.set_page_config(layout="wide")  # Use full screen width
 
-st.title("IP Address Usage Checker for Students")
+st.title("PAZ IP Address Usage Checker for Students")
 
-uploaded_logs = st.file_uploader("Upload logs CSV file", type=["csv"])
+uploaded_logs = st.file_uploader("Upload the log file exported from Moodle of the day of the exam in CSV format", type=["csv"])
 
 use_student_list = st.toggle("Use student list", value=False)
 
@@ -22,6 +22,7 @@ group_by_ip = st.checkbox("Group logs by IP address", value=True)
 if uploaded_logs:
     # Read CSV logs
     df = pd.read_csv(uploaded_logs, sep=',', low_memory=False)
+    df = df[df['User full name'].str.strip() != "-"]  # Remove system logs
     df['Date'] = pd.to_datetime(df['Time'], format="%y/%m/%d, %H:%M:%S").dt.date
     df['Time'] = pd.to_datetime(df['Time'], format="%y/%m/%d, %H:%M:%S").dt.time
     cols = ['Date'] + [col for col in df.columns if col != 'Date']
